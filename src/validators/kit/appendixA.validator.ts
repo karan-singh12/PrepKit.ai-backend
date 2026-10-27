@@ -6,7 +6,7 @@ export interface ValidationResult {
 }
 
 /**
- * Validates that an object strictly conforms to Appendix A of the Trao assignment specification.
+ * Validates that an object strictly conforms to Appendix A of the PrepKit.ai assignment specification.
  *
  * Rules:
  * 1. All mandatory fields present and correctly typed.

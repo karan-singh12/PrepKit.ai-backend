@@ -9,7 +9,7 @@ export class GeminiProvider implements ILLMProvider {
 
   constructor(apiKey?: string, model?: string) {
     this.apiKey = apiKey || process.env.GEMINI_API_KEY || '';
-    this.defaultModel = model || process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+    this.defaultModel = model || process.env.GEMINI_MODEL || 'gemini-2.5-flash';
     // Free tier: 15 RPM, minimum 1.5s between calls
     this.rateLimiter = new RateLimiter(14, 1500);
   }
@@ -27,7 +27,7 @@ export class GeminiProvider implements ILLMProvider {
 
     const targetModel = options.preferredModel || this.defaultModel;
     const candidateModels = Array.from(
-      new Set([targetModel, 'gemini-2.0-flash', 'gemini-2.5-flash', 'gemini-1.5-flash-latest', 'gemini-1.5-flash'])
+      new Set([targetModel, 'gemini-2.5-flash', 'gemini-3.8-flash', 'gemini-1.5-flash', 'gemini-flash-latest'])
     );
     const baseUrl = (process.env.GEMINI_API_BASE_URL || 'https://generativelanguage.googleapis.com').replace(/\/+$/, '');
 

@@ -20,7 +20,7 @@ export interface FetchOptions {
 
 const DEFAULT_TIMEOUT_MS = 7000;
 const DEFAULT_MAX_SIZE_BYTES = 2 * 1024 * 1024; // 2 MB
-const DEFAULT_USER_AGENT = 'TraoAiBot/1.0 (+https://trao.ai/bot)';
+const DEFAULT_USER_AGENT = 'PrepKitAiBot/1.0 (+https://prepkit.ai/bot)';
 
 export class PageFetcher {
   private static robotsCache = new Map<string, { disallowedPaths: string[]; timestamp: number }>();

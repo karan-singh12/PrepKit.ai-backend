@@ -52,7 +52,7 @@ export const createApp = (): Application => {
   }
 
   app.get("/", (req, res) => {
-    return successResponse(res, "Trao.ai Backend API", {
+    return successResponse(res, "PrepKit.ai Backend API", {
       status: "online",
       version: "1.0.0",
       docs: "/api/health",

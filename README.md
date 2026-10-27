@@ -1,4 +1,4 @@
-# Trao.ai — Backend Service & Intelligent AI Engine
+# PrepKit.ai — Backend Service & Intelligent AI Engine
 
 > **Full-Stack AI Interview Preparation Platform (`FS-AI-INTERVIEW-01`)**  
 > Built with **Node.js**, **Express 5**, **TypeScript**, and **MongoDB**. Features an Autonomous Web Research Crawler, Deterministic Mathematical Scheduling, Closed-Loop Requirement Auditing, and Multi-Provider LLM Routing.
@@ -19,7 +19,7 @@
 5. [Deep Dive 3: The Second Pass Coverage Feedback Loop](#deep-dive-3-the-second-pass-coverage-feedback-loop)
 6. [Deep Dive 4: Intelligent Model Routing & Multi-Provider Architecture](#deep-dive-4-intelligent-model-routing--multi-provider-architecture)
 7. [Deep Dive 5: Autonomous Web Crawler & SSRF Defense](#deep-dive-5-autonomous-web-crawler--ssrf-defense)
-8. [Full 9-Stage Sequenced Pipeline](#full-9-stage-sequenced-pipeline)
+8. [Full 8-Stage Sequenced Pipeline](#full-8-stage-sequenced-pipeline)
 9. [API Reference & Endpoint Contracts](#api-reference--endpoint-contracts)
 10. [Headless Batch Evaluation CLI (Appendix B)](#headless-batch-evaluation-cli-appendix-b)
 11. [Automated Test Suite (45 Passing Tests)](#automated-test-suite-45-passing-tests)
@@ -29,14 +29,14 @@
 
 ## Core Architectural Philosophy & Invariants
 
-Trao's engineering assessment specifically evaluates **architectural judgment**:
+PrepKit.ai's engineering architecture evaluates sound technical judgment:
 - **What we delegated to LLMs**: Natural language comprehension, company culture synthesis, question rubric phrasing, and active-recall explanations.
 - **What we strictly refused to let LLMs decide**: Calendar arithmetic, day counts, study durations, schema invariants, and requirement coverage checking.
 
 ### Non-Negotiable Engineering Invariants
 | Invariant | Our Production Implementation | What We Strictly Avoided |
 | :--- | :--- | :--- |
-| **No Single-Prompt Monoliths** | Discrete 9-stage sequenced pipeline where each stage's validated output feeds the next stage. | Relying on a giant single prompt to generate an entire kit at once. |
+| **No Single-Prompt Monoliths** | Discrete 8-stage sequenced pipeline where each stage's validated output feeds the next stage. | Relying on a giant single prompt to generate an entire kit at once. |
 | **Pure Code Determinism** | Scheduling, integer minutes, and gap-detection math are executed strictly in pure TypeScript (`ScheduleEngine`, `CoverageEngine`). | Asking the LLM to calculate day allocations or check its own coverage. |
 | **Zero Hallucination Grounding** | JDs are parsed strictly for explicit mentions. 2-line stubs extract only literal text. Unreachable URLs gracefully degrade without inventing corporate facts. | Hallucinating unmentioned frameworks, years of experience, or fake company histories. |
 | **Lossless User State** | User custom edits, pinned cards, and hand-crafted questions permanently survive category regenerations. | Overwriting user edits when refreshing a category. |
@@ -57,7 +57,7 @@ As mandated by **Section 1: Authentication & User Isolation**, the platform impl
 - **Schema Validation**: Inputs are validated at the gateway using Joi (`userSignupSchema`, `userLoginSchema`) to reject malformed emails and weak credentials before hitting controllers.
 
 ### 2. Strict User Isolation Invariant
-Trao's specification requires that:
+PrepKit.ai's specification requires that:
 > *"Users can only read and modify their own kits (userId isolation in MongoDB queries)."*
 
 Our backend enforces this invariant at the database repository layer (`kitRepository.ts`):
@@ -129,7 +129,7 @@ Existing Question Bank
 ### Why NOT an LLM for Scheduling?
 LLMs consistently fail at temporal arithmetic: they produce float minutes (e.g., $18.33$ mins), skip days, drift from the requested duration (producing 4 or 6 days instead of 5), or miss critical requirements. 
 
-In Trao.ai, scheduling is **100% pure TypeScript deterministic mathematics** in `ScheduleEngine.ts`.
+In PrepKit.ai, scheduling is **100% pure TypeScript deterministic mathematics** in `ScheduleEngine.ts`.
 
 ### Core Scheduling Algorithms
 
@@ -198,7 +198,7 @@ If $\text{Gaps} \neq \emptyset$, `SecondPassRunner`:
 
 ## Deep Dive 4: Intelligent Model Routing & Multi-Provider Architecture
 
-Trao.ai features a unified, enterprise-grade **Multi-Provider LLM SDK** with **Task-Based Routing** and **Zero-Downtime Resilient Failover**.
+PrepKit.ai features a unified, production-ready **Multi-Provider LLM SDK** with **Task-Based Routing** and **Zero-Downtime Resilient Failover**.
 
 ```
                            ┌───────────────────────────────┐
@@ -208,7 +208,7 @@ Trao.ai features a unified, enterprise-grade **Multi-Provider LLM SDK** with **T
          ┌──────────────────┬──────────────┴───────┬──────────────────┐
          ▼                  ▼                      ▼                  ▼
   [Google Gemini]        [Groq]                [OpenAI]         [OpenRouter]
-  gemini-1.5-flash    llama-3.3-70b           gpt-4o-mini       200+ Models
+  gemini-2.5-flash    llama-3.3-70b           gpt-4o-mini       200+ Models
   (1M Token Context)  (500+ tok/sec)        (Deep Rubrics)    (Llama/Claude/DS)
 ```
 
@@ -217,18 +217,18 @@ Every pipeline stage routes to the LLM best suited for its cognitive profile:
 
 | Task | Primary Provider & Model | Core Advantage | Automatic Fallback Chain |
 | :--- | :--- | :--- | :--- |
-| **`extraction`** | **Google Gemini** (`gemini-1.5-flash`) | Strict JSON grammar, structured extraction, zero hallucination | OpenAI $\rightarrow$ Groq $\rightarrow$ OpenRouter |
-| **`brief`** | **Google Gemini** (`gemini-1.5-flash`) | **1,000,000 token context window** to digest full scraped web pages | OpenRouter $\rightarrow$ Groq $\rightarrow$ OpenAI |
-| **`questions`** | **OpenAI** (`gpt-4o-mini`) | Nuanced interview evaluation criteria, scoring rubrics, calibrated hints | Groq $\rightarrow$ Gemini $\rightarrow$ OpenRouter |
-| **`flashcards`** | **Groq** (`llama-3.3-70b-versatile`) | **Ultra-fast inference (500+ tokens/sec)** for rapid Q&A cards | Gemini $\rightarrow$ OpenRouter $\rightarrow$ OpenAI |
-| **`second_pass`** | **Groq** (`llama-3.3-70b-versatile`) | Lightning-fast targeted closure of missing requirements | Gemini $\rightarrow$ OpenAI $\rightarrow$ OpenRouter |
+| **`extraction`** | **Google Gemini** (`gemini-2.5-flash`) | Strict JSON grammar, structured extraction, zero hallucination | OpenAI $\rightarrow$ Groq $\rightarrow$ OpenRouter |
+| **`brief`** | **Google Gemini** (`gemini-2.5-flash`) | **1,000,000 token context window** to digest full scraped web pages | OpenRouter $\rightarrow$ Groq $\rightarrow$ OpenAI |
+| **`questions`** | **Google Gemini** (`gemini-2.5-flash`) | Structured questions, balanced category distribution, difficulty ratings | OpenAI $\rightarrow$ Groq $\rightarrow$ OpenRouter |
+| **`flashcards`** | **Google Gemini** (`gemini-2.5-flash`) | Rapid synthesis of active recall concept and answer pairs | Groq $\rightarrow$ OpenAI $\rightarrow$ OpenRouter |
+| **`second_pass`** | **Google Gemini** (`gemini-2.5-flash`) | Targeted gap closure for missing must-have qualifications | OpenAI $\rightarrow$ Groq $\rightarrow$ OpenRouter |
 
 ### 2. Zero-Downtime Resilient Failover Chain
 If any provider hits an error (**HTTP 429 Rate Limit**, **Quota Exceeded**, **HTTP 503**, or **Network Timeout**):
 - The request never crashes.
 - `ModelRouter` logs a warning and immediately switches to the next provider in the chain.
 - The returned response tags `fallbackUsed: true` and lists `attemptedProviders: ['primary', 'fallback']`.
-- In development/testing, `MockLLMProvider` acts as the ultimate safety net.
+- In development/testing, `MockLLMProvider` acts as the deterministic safety net.
 
 ### 3. Built-In Token Leaky-Bucket Rate Limiter
 Every provider implements an in-memory `RateLimiter`:
@@ -255,46 +255,52 @@ The crawler pipeline (`CompanyCrawler`) extracts real-world company culture, hir
 
 ### 3. Graceful Degradation
 - If a target company domain is unreachable (HTTP 404, DNS failure, or 10-second timeout):
-- **The pipeline DOES NOT abort.**
+- **The pipeline does not abort.**
 - The crawler returns clean fallback signals, and `CompanyBriefGenerator` generates a transparent brief grounded solely in the verified Job Description without inventing corporate facts.
 
 ---
 
-## Full 9-Stage Sequenced Pipeline
+## Full 8-Stage Sequenced Pipeline
+
+The kit generation architecture executes across 8 discrete, verifiable stages:
 
 ```
 [Job Description + Target URL + Days Available]
                        │
                        ▼
-    [Stage 0: Input Sanitization & SSRF Defense]
+    [Stage 1: Input Validation & SSRF Guard] ────────► URL validation, protocol & loopback checks
                        │
                        ▼
-    [Stage 1: Grounded Requirement Extraction] ──────► Stable r1, r2 IDs; must vs nice
+    [Stage 2: Grounded Requirement Extraction] ──────► Stable r1, r2 IDs; must vs nice
                        │
                        ▼
-    [Stage 2: Autonomous Company Web Scraping] ──────► Ranked link crawling (careers, about)
+    [Stage 3: Autonomous Web Crawling & Research] ───► Ranked link crawling (careers, about, culture)
                        │
                        ▼
-    [Stage 3: Verified Discussion Searcher]   ──────► Public interview patterns
+    [Stage 4: Company Brief & Culture Synth] ────────► Grounded mission, values & tech stack
                        │
                        ▼
-    [Stage 4: Company Brief & Culture Synth]   ──────► Grounded mission & tech stack
+    [Stage 5: Categorized Question Generation] ──────► Technical, system design, behavioural, company-fit
                        │
                        ▼
-    [Stage 5: Categorized Question Generation] ──────► Tech, system design, behavioural
+    [Stage 6: Active-Recall Flashcards Synth] ───────► Spaced repetition concept/answer pairs
                        │
                        ▼
-    [Stage 6: Active-Recall Flashcards Synth]  ──────► Key concept revision pairs
+    [Stage 7: Deterministic Second Pass Loop] ───────► Closed-loop gap audit & targeted closure
                        │
                        ▼
-    [Stage 7: Deterministic Second Pass Loop]  ──────► Gaps check & targeted closure
-                       │
-                       ▼
-    [Stage 8: Arithmetic Scheduling Engine]    ──────► Exact N days, integer minutes
-                       │
-                       ▼
-    [Stage 9: Appendix A Schema Verification]  ──────► 100% strict contract validation
+    [Stage 8: Arithmetic Scheduling & Appendix A] ───► Exact N days, integer minutes, strict schema validation
 ```
+
+### Stage Summary
+1. **Stage 1 — Input Validation & SSRF Guard**: Verifies public URLs, rejects private subnets and metadata endpoints (`169.254.169.254`), and normalizes domains.
+2. **Stage 2 — Grounded Requirement Extraction**: Parses job descriptions strictly into discrete, identifiable requirements (`r1`, `r2`) tagged `must` or `nice`.
+3. **Stage 3 — Autonomous Web Crawling & Research**: Discovers internal links, prioritizing `/careers` and `/about`, and extracts public hiring intelligence.
+4. **Stage 4 — Company Brief & Culture Synthesis**: Summarizes company mission, products, and culture while preserving source attribution and avoiding fabricated facts.
+5. **Stage 5 — Categorized Question Generation**: Generates role-calibrated questions across technical, system design, behavioural, and company-fit dimensions with difficulty ratings (1, 2, 3).
+6. **Stage 6 — Active-Recall Flashcard Generation**: Builds concise concept and answer pairs mapped to extracted requirements for spaced repetition study.
+7. **Stage 7 — Deterministic Second Pass Coverage Loop**: Audits requirement coverage via pure set operations. If any must-have requirement lacks questions, triggers a targeted pass and records `coverage.passes = 2`.
+8. **Stage 8 — Deterministic Arithmetic Scheduling & Appendix A Validation**: Allocates questions into exactly N daily schedules with integer minutes, and performs strict Appendix A schema verification.
 
 ---
 
@@ -533,14 +539,12 @@ Add your API keys to `.env`:
 ```env
 PORT=5000
 NODE_ENV=development
-MONGODB_URI=mongodb://localhost:27017/trao_ai
+MONGODB_URI=mongodb://localhost:27017/prepkit_ai
 CORS_ORIGIN=http://localhost:3000
 JWT_SECRET=your_jwt_secret_key
 
 GEMINI_API_KEY=your_gemini_key_here
-GROQ_API_KEY=your_groq_key_here
-OPENAI_API_KEY=your_openai_key_here
-OPENROUTER_API_KEY=your_openrouter_key_here
+GEMINI_MODEL=gemini-2.5-flash
 DEFAULT_LLM_PROVIDER=gemini
 ```
 

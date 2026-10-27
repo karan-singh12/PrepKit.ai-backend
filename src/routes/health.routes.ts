@@ -10,7 +10,7 @@ router.get("/", (req: Request, res: Response) => {
 
   return successResponse(res, "Health check successful", {
     status: "ok",
-    service: "trao-ai-backend",
+    service: "prepkit-ai-backend",
     database: dbStatus,
   });
 });

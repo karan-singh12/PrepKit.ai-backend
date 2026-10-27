@@ -34,8 +34,8 @@ export class OpenAIProvider implements ILLMProvider {
         'meta-llama/llama-3.3-70b-instruct';
       this.rateLimiter = new RateLimiter(20, 1000);
       this.extraHeaders = {
-        'HTTP-Referer': 'https://trao.ai',
-        'X-Title': 'Trao.ai Interview Preparation',
+        'HTTP-Referer': 'https://prepkit.ai',
+        'X-Title': 'PrepKit.ai Interview Preparation',
       };
     } else {
       // Standard OpenAI

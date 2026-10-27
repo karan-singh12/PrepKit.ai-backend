@@ -9,7 +9,7 @@ try {
 }
 
 export const connectDB = async (): Promise<void> => {
-  const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017/trao_ai";
+  const mongoUri = process.env.MONGODB_URI || "mongodb://localhost:27017/prepkit_ai";
 
   try {
     const conn = await mongoose.connect(mongoUri, {
